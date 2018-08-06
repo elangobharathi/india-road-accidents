@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { arrayOf, shape } from 'prop-types';
+import { arrayOf, shape, string } from 'prop-types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './Map.css';
@@ -62,6 +62,7 @@ class Map extends Component {
   render() {
     const choroplethLayer = (
       <Choropleth
+        viewBy={this.props.viewBy}
         choroplethConfig={this.choroplethConfig}
         shapeDisplayProp="name"
         data={{
@@ -85,7 +86,8 @@ class Map extends Component {
 }
 
 Map.propTypes = {
-  data: arrayOf(shape).isRequired
+  data: arrayOf(shape).isRequired,
+  viewBy: string.isRequired
 };
 
 export default Map;

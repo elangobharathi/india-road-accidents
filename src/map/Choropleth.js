@@ -63,7 +63,7 @@ class Choropleth extends Component {
   render() {
     return [
       <LeafletChoropleth
-        key="chroropleth"
+        key={this.props.viewBy}
         data={this.props.data}
         valueProperty={this.props.valueProperty}
         colors={this.props.choroplethConfig.legendColor}
