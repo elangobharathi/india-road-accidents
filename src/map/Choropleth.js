@@ -3,9 +3,11 @@ import { arrayOf, shape, string, func } from 'prop-types';
 import L from 'leaflet';
 import LeafletChoropleth from 'react-leaflet-choropleth';
 import Control from './Control';
-import { checkDecimal } from '../utils';
+// import { checkDecimal } from '../utils';
 
 class Choropleth extends Component {
+  isDefaultFeature = true;
+  chroplethRef = React.createRef();
   componentWillMount() {
     const legendColors = this.props.choroplethConfig.legendColor.map(color => (
       <li key={color} style={{ backgroundColor: color }} />
@@ -20,9 +22,12 @@ class Choropleth extends Component {
     );
   }
 
-  handleMouseOver = e => {
-    const featureShape = e.target;
-    featureShape.setStyle({
+  componentDidMount() {
+    this.highlightDefaultFeature();
+  }
+
+  highlightFeature = layer => {
+    layer.setStyle({
       weight: 5,
       color: '#666',
       dashArray: '',
@@ -30,13 +35,12 @@ class Choropleth extends Component {
     });
 
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-      featureShape.bringToFront();
+      layer.bringToFront();
     }
   };
 
-  handleMouseOut = e => {
-    const featureShape = e.target;
-    featureShape.setStyle({
+  dehighlightFeature = layer => {
+    layer.setStyle({
       weight: 0.5,
       opacity: 1,
       color: 'white',
@@ -45,25 +49,58 @@ class Choropleth extends Component {
     });
   };
 
-  constructTooltip = (feature, defaultDisplayProp, displayPropsList) => {
-    let toolTipString = `<strong>${
-      feature.properties[defaultDisplayProp]
-    }</strong>`;
-    displayPropsList.forEach(displayItem => {
-      const value = feature.properties[displayItem.id];
-      const str = `${displayItem.name}: ${
-        checkDecimal(value) ? value.toFixed(2) : value
-      }`;
-      toolTipString = `${toolTipString} <br> ${str}`;
-    });
+  getLayer = stateName => {
+    const layers = this.chroplethRef.current.leafletElement.getLayers();
+    const layer = layers.find(
+      layer => layer.options.data.properties.name === stateName
+    );
 
-    return toolTipString;
+    return layer;
   };
+
+  highlightDefaultFeature = () => {
+    const layer = this.getLayer(this.props.defaultState);
+    this.highlightFeature(layer);
+  };
+
+  dehighlightDefaultFeature = () => {
+    const layer = this.getLayer(this.props.defaultState);
+    this.dehighlightFeature(layer);
+    this.isDefaultFeature = false;
+  };
+
+  handleMouseOver = e => {
+    if (this.isDefaultFeature) {
+      this.dehighlightDefaultFeature();
+    }
+    this.highlightFeature(e.target);
+    this.props.onEachFeatureSelect(e.target.feature.properties);
+  };
+
+  handleMouseOut = e => {
+    this.dehighlightFeature(e.target);
+  };
+
+  //   constructTooltip = (feature, defaultDisplayProp, displayPropsList) => {
+  //     let toolTipString = `<strong>${
+  //       feature.properties[defaultDisplayProp]
+  //     }</strong>`;
+  //     displayPropsList.forEach(displayItem => {
+  //       const value = feature.properties[displayItem.id];
+  //       const str = `${displayItem.name}: ${
+  //         checkDecimal(value) ? value.toFixed(2) : value
+  //       }`;
+  //       toolTipString = `${toolTipString} <br> ${str}`;
+  //     });
+
+  //     return toolTipString;
+  //   };
 
   render() {
     return [
       <LeafletChoropleth
         key={this.props.viewBy}
+        ref={this.chroplethRef}
         data={this.props.data}
         valueProperty={this.props.valueProperty}
         colors={this.props.choroplethConfig.legendColor}
@@ -71,13 +108,13 @@ class Choropleth extends Component {
         mode={this.props.choroplethConfig.mode}
         style={this.props.choroplethConfig.style}
         onEachFeature={(feature, layer) => {
-          layer.bindTooltip(
-            this.constructTooltip(
-              feature,
-              this.props.shapeDisplayProp,
-              this.props.choroplethConfig.displayPropsList
-            )
-          );
+          //   layer.bindTooltip(
+          //     this.constructTooltip(
+          //       feature,
+          //       this.props.shapeDisplayProp,
+          //       this.props.choroplethConfig.displayPropsList
+          //     )
+          //   );
           layer.on({
             mouseover: this.handleMouseOver,
             mouseout: this.handleMouseOut
@@ -120,7 +157,9 @@ Choropleth.propTypes = {
     features: arrayOf(shape)
   }).isRequired,
   valueProperty: func.isRequired,
-  choroplethConfig: shape({}).isRequired
+  choroplethConfig: shape({}).isRequired,
+  onEachFeatureSelect: func.isRequired,
+  defaultState: string.isRequired
 };
 
 export default Choropleth;

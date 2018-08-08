@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { arrayOf, shape, string } from 'prop-types';
+import { arrayOf, func, shape, string } from 'prop-types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './Map.css';
@@ -70,6 +70,8 @@ class Map extends Component {
           features: this.props.data
         }}
         valueProperty={feature => feature.properties['perLakhPopulation']}
+        onEachFeatureSelect={this.props.onEachFeature}
+        defaultState={this.props.defaultState}
       />
     );
 
@@ -87,7 +89,9 @@ class Map extends Component {
 
 Map.propTypes = {
   data: arrayOf(shape).isRequired,
-  viewBy: string.isRequired
+  viewBy: string.isRequired,
+  onEachFeature: func.isRequired,
+  defaultState: string.isRequired
 };
 
 export default Map;

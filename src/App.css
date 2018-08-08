@@ -3,11 +3,31 @@
 }
 
 .appTitle {
-  font-size: 1.5em;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.viewContainer {
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .appContainer {
   height: 100%;
   width: 100%;
   margin: 0 auto;
+}
+
+.infoContainer {
+  height: 90%;
+  background-color: #f8f9fa;
+}
+
+.texts p {
+  font-size: 14px;
+}
+
+.texts .stateName {
+  font-size: 17px;
+  font-weight: 700;
 }
