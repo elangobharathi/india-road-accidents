@@ -121,7 +121,7 @@ class Choropleth extends Component {
           });
         }}
       />,
-      <Control className="info legend" position="bottomleft" key="legend">
+      <Control className="info legend" position="bottomright" key="legend">
         {this.legend}
       </Control>
     ];

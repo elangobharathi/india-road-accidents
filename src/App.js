@@ -15,8 +15,21 @@ class App extends Component {
   defaultState = 'Tamil Nadu';
   state = {
     viewBy: 'numberOfAccidents',
-    selectedState: this.defaultState
+    selectedState: this.defaultState,
+    barChart: {
+      width: 400,
+      height: 400
+    }
   };
+
+  componentDidMount() {
+    this.updateWindowDimensions();
+    window.addEventListener('resize', this.updateWindowDimensions);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateWindowDimensions);
+  }
 
   viewByButtons = [
     {
@@ -28,6 +41,15 @@ class App extends Component {
       name: 'Persons Killed'
     }
   ];
+
+  updateWindowDimensions = () => {
+    this.setState({
+      barChart: {
+        width: document.getElementById('barChart').clientWidth,
+        height: document.getElementById('barChart').clientHeight
+      }
+    });
+  };
 
   handleRadioButtonClick = selected => {
     this.setState({ viewBy: selected });
@@ -74,7 +96,7 @@ class App extends Component {
         </div>
       </div>,
       <div key="body" className="row h-100 mt-1">
-        <Col xs="8" className="mapContainer">
+        <Col xs="7" className="mapContainer">
           <Map
             data={
               this.state.viewBy === 'numberOfAccidents'
@@ -86,13 +108,20 @@ class App extends Component {
             defaultState={this.defaultState}
           />
         </Col>
-        <Col xs="4 infoContainer">
+        <Col xs="5 infoContainer">
           <InfoTexts
             selectedState={this.state.selectedState}
             accidentsData={this.accidentsGeoData}
             killedData={this.killedGeoData}
           />
-          <BarChart data={vehicleTypesData} />
+          <div id="barChart">
+            <BarChart
+              width={this.state.barChart.width}
+              height={this.state.barChart.height}
+              data={vehicleTypesData}
+              selectedState={this.state.selectedState}
+            />
+          </div>
         </Col>
       </div>
     ];
