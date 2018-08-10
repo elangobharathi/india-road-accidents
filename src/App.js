@@ -5,9 +5,11 @@ import './App.css';
 import Map from './map/Map';
 import RadioButton from './common/RadioButton';
 import InfoTexts from './InfoTexts';
+import BarChart from './chart/BarChart';
 const shapeFile = require('./data/states.json');
 const accidentsTotalData = require('./data/accidents_total_share_plp.json');
 const killedTotalData = require('./data/killed_total_share_plp.json');
+const vehicleTypesData = require('./data/vehicle_types.json');
 
 class App extends Component {
   defaultState = 'Tamil Nadu';
@@ -61,7 +63,7 @@ class App extends Component {
         key="header"
         className="appHeader d-flex justify-content-between p-3"
       >
-        <span className="appTitle">Accidents In India - 2016</span>
+        <span className="appTitle">Road Accidents In India - 2016</span>
         <div className="d-flex viewContainer">
           <span className="mr-3">View by:</span>
           <RadioButton
@@ -90,6 +92,7 @@ class App extends Component {
             accidentsData={this.accidentsGeoData}
             killedData={this.killedGeoData}
           />
+          <BarChart data={vehicleTypesData} />
         </Col>
       </div>
     ];
