@@ -1,11 +1,18 @@
-.bar {
-  fill: steelblue;
-}
-
-.bar:hover {
-  fill: brown;
-}
-
 .axis--x path {
   display: none;
+}
+
+.tick line {
+  display: none;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.yAxisLabel {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
 }

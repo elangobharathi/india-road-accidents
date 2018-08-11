@@ -34,11 +34,13 @@ class App extends Component {
   viewByButtons = [
     {
       id: 'numberOfAccidents',
-      name: 'Number of Accidents'
+      name: 'Number of Accidents',
+      vehicleDataRef: 'accidentsTotal'
     },
     {
       id: 'personsKilled',
-      name: 'Persons Killed'
+      name: 'Persons Killed',
+      vehicleDataRef: 'personsKilled'
     }
   ];
 
@@ -120,6 +122,9 @@ class App extends Component {
               height={this.state.barChart.height}
               data={vehicleTypesData}
               selectedState={this.state.selectedState}
+              viewBy={this.viewByButtons.find(
+                each => each.id === this.state.viewBy
+              )}
             />
           </div>
         </Col>
