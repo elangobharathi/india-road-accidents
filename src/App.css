@@ -23,10 +23,6 @@
   background-color: #f8f9fa;
 }
 
-.infoContainer {
-  height: 100%;
-}
-
 .texts p {
   font-size: 14px;
 }
@@ -36,18 +32,14 @@
   font-weight: 700;
 }
 
-.flex-fill {
-  flex: 1 1 auto;
-}
-
-.textsDiv {
+.textContainer {
   height: 15%;
 }
 
-.barChart {
+.barContainer {
   height: 45%;
 }
 
-.donutChart {
+.donutContainer {
   height: 40%;
 }

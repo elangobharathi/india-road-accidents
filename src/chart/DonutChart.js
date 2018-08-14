@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { arrayOf, shape, number, string } from 'prop-types';
 import * as d3 from 'd3';
 import './chart.css';
 
@@ -27,6 +28,9 @@ class DonutChart extends Component {
     this.renderChart();
   }
 
+  donutChartRef = React.createRef();
+  percentFormat = d3.format(',.2%');
+
   resetChart = props => {
     this.svg.remove();
     this.legend.selectAll('.key').remove();
@@ -37,10 +41,13 @@ class DonutChart extends Component {
     const svgRef = d3.select(this.donutChartRef.current);
     const width = currentProps.width / 2;
     const height = currentProps.height;
-    console.log('Initialize params', width, height);
-    this.radius = Math.min(width, height) / 2;
     const margin = { top: 10, right: 0, bottom: 10, left: 0 };
-    this.color = d3.scaleOrdinal([
+    const padAngle = 0.015;
+    const floatFormat = d3.format('.4r');
+    const cornerRadius = 3;
+
+    this.radius = Math.min(width, height) / 2;
+    this.colorScale = d3.scaleOrdinal([
       '#800026',
       '#268000',
       '#004d80',
@@ -50,15 +57,13 @@ class DonutChart extends Component {
       '#800066',
       '#CC6EAE'
     ]);
-    this.variable = currentProps.viewBy.vehicleDataRef;
+    this.value = currentProps.viewBy.vehicleDataRef;
     this.category = 'cause';
-    const padAngle = 0.015;
-    const floatFormat = d3.format('.4r');
-    const cornerRadius = 3;
+    this.legend = d3.select('.donutLegend');
 
     this.pie = d3
       .pie()
-      .value(d => floatFormat(d[this.variable]))
+      .value(d => floatFormat(d[this.value]))
       .sort(null);
 
     this.arc = d3
@@ -72,7 +77,7 @@ class DonutChart extends Component {
       .append('g')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom)
-      .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+      .attr('transform', `translate(${width / 2},${height / 2})`);
 
     this.svg.append('g').attr('class', 'slices');
   };
@@ -81,10 +86,7 @@ class DonutChart extends Component {
     const data = this.props.data.filter(
       state => state.name === this.props.selectedState
     );
-    const total = data.reduce(
-      (total, cause) => total + cause[this.variable],
-      0
-    );
+    const total = data.reduce((total, cause) => total + cause[this.value], 0);
 
     this.svg
       .select('.slices')
@@ -93,59 +95,40 @@ class DonutChart extends Component {
       .data(this.pie)
       .enter()
       .append('path')
-      .attr('fill', d => this.color(d.data[this.category]))
+      .attr('fill', d => this.colorScale(d.data[this.category]))
       .attr('d', this.arc);
-
-    const percentFormat = d3.format(',.2%');
-
-    this.legend = d3.select('#legend');
-    //   .append('div')
-    //   .attr('class', 'legend')
-    //   .style('margin-top', '30px');
 
     const keys = this.legend
       .selectAll('.key')
       .data(data)
       .enter()
       .append('div')
-      .attr('class', 'key')
-      .style('display', 'flex')
-      .style('align-items', 'center')
-      .style('margin-right', '20px')
-      .style('margin-bottom', '5px');
+      .attr('class', 'key');
 
-    console.log(this.props.width, this.props.height);
-
-    if (this.props.width > 400 && this.props.height > 200) {
+    if (this.props.width > 400 && this.props.height > 250) {
       keys
         .append('div')
         .attr('class', 'symbol')
-        .style('height', '15px')
-        .style('width', '15px')
-        .style('margin', '5px 5px')
-        .style('background-color', (d, i) => this.color(i));
+        .style('background-color', d => this.colorScale(d[this.category]));
     }
 
     keys
       .append('div')
       .attr(
         'class',
-        this.props.width > 400 && this.props.height > 200
-          ? 'legendTextBig'
-          : 'legendTextSmall'
+        this.props.width > 400 && this.props.height > 250
+          ? 'textBig'
+          : 'textSmall'
       )
-      .style('color', (d, i) => this.color(i))
+      .style('color', d => this.colorScale(d[this.category]))
       .html(
         d =>
-          `${d[this.category]}: <strong>${percentFormat(
-            d[this.variable] / total
+          `${d[this.category]}: <strong>${this.percentFormat(
+            d[this.value] / total
           )}</strong>`
       );
-
-    keys.exit().remove();
   };
 
-  donutChartRef = React.createRef();
   render() {
     console.log(this.props.width, this.props.height);
     return (
@@ -157,12 +140,20 @@ class DonutChart extends Component {
             ref={this.donutChartRef}
           />
         </div>
-        <div id="legend" className="donutLegend align-self-center mt-2">
-          <div className="legendTitle">Cause of Accidents</div>
+        <div className="donutLegend align-self-center mt-2">
+          <div className="title">Cause of Accidents</div>
         </div>
       </div>
     );
   }
 }
+
+DonutChart.propTypes = {
+  width: number.isRequired,
+  height: number.isRequired,
+  data: arrayOf(shape).isRequired,
+  selectedState: string.isRequired,
+  viewBy: shape({}).isRequired
+};
 
 export default DonutChart;

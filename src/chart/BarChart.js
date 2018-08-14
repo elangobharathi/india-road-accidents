@@ -6,39 +6,33 @@ import './chart.css';
 const typesInfo = [
   {
     type: 'Two Wheelers',
-    color: '#CC998C',
     icon: 'bike',
     included: ['Motor Cycle', 'Moped/Scootty']
   },
   {
     type: 'Auto Rickshaws',
-    color: '#F29279',
     icon: 'auto',
     included: ['Auto Rickshaws']
   },
   {
     type: 'Cars',
-    color: '#AA8899',
     icon: 'car',
     included: ['Cars', 'Jeep', 'Taxis']
   },
   {
     type: 'Buses',
-    color: '#FF99B6',
     icon: 'bus',
     included: ['Bus']
   },
   {
     type: 'Trucks',
-    color: '#fdc171',
     icon: 'truck',
     included: ['Truck Lorry', 'Tempo', 'Trolly', 'Tractor']
   },
   {
     type: 'Others',
-    color: '#AA9988',
     icon: 'other',
-    included: ['E-Rickshaw', 'Other Motor Vehicles', 'Other Objects']
+    included: ['Other Motor Vehicles']
   }
 ];
 
@@ -87,6 +81,16 @@ class BarChart extends Component {
     this.y = d3.scaleLinear().rangeRound([this.height, 0]);
     this.xAxis = d3.axisBottom(this.x).tickPadding(10);
     this.yAxis = d3.axisLeft(this.y).ticks(5);
+    this.value = props.viewBy.vehicleDataRef;
+    this.category = 'vehicleType';
+    this.colorScale = d3.scaleOrdinal([
+      '#CC998C',
+      '#F29279',
+      '#AA8899',
+      '#FF99B6',
+      '#fdc171',
+      '#AA9988'
+    ]);
   };
 
   initializeContainer = () => {
@@ -98,7 +102,7 @@ class BarChart extends Component {
     this.tooltipDiv = d3
       .select('body')
       .append('div')
-      .attr('class', 'tooltip')
+      .attr('class', 'iconTooltip')
       .style('opacity', 0);
   };
 
@@ -106,8 +110,8 @@ class BarChart extends Component {
     const data = this.props.data.filter(
       d => d.name === this.props.selectedState
     );
-    this.x.domain(data.map(d => d.vehicleType));
-    this.y.domain([0, d3.max(data, d => d[this.props.viewBy.vehicleDataRef])]);
+    this.x.domain(data.map(d => d[this.category]));
+    this.y.domain([0, d3.max(data, d => d[this.value])]);
 
     const xAxis = this.svg
       .append('g')
@@ -115,16 +119,57 @@ class BarChart extends Component {
       .attr('transform', `translate(0, ${this.height})`)
       .call(this.xAxis);
 
-    const tooltipDiv = this.tooltipDiv;
+    this.svg
+      .append('g')
+      .attr('class', 'axis axis--y')
+      .call(this.yAxis)
+      .append('text')
+      .attr('class', 'yAxisLabel')
+      .attr('text-anchor', 'middle')
+      .attr('fill', '#000000')
+      .attr(
+        'transform',
+        `translate(${-(this.margin.left - 10)},${this.height / 2})rotate(-90)`
+      )
+      .text(this.props.viewBy.name);
 
+    this.svg
+      .selectAll('.bar')
+      .data(data)
+      .enter()
+      .append('rect')
+      .attr('class', 'bar')
+      .attr('x', d => this.x(d[this.category]))
+      .attr('y', d => this.y(d[this.value]))
+      .attr('fill', d => this.colorScale(d[this.category]))
+      .attr('width', this.x.bandwidth())
+      .attr('height', d => this.height - this.y(d[this.value]));
+
+    this.svg
+      .selectAll('.label')
+      .data(data)
+      .enter()
+      .append('text')
+      .attr('class', 'label')
+      .attr('x', d => this.x(d[this.category]) + this.x.bandwidth() / 2)
+      .attr('y', d => this.y(d[this.value]) - 3)
+      .attr('text-anchor', 'middle')
+      .text(d => {
+        return d3.format(',')(d[this.value]);
+      });
+
+    const tooltipDiv = this.tooltipDiv;
     const imagePath =
       process.env.NODE_ENV === 'production'
         ? '/india-road-accidents/images/'
         : '/images/';
+
     xAxis.selectAll('.tick').each(function(d) {
-      const p = d3.select(this);
-      p.select('text').remove();
-      p.append('svg:image')
+      const tick = d3.select(this);
+      tick.select('text').remove();
+
+      tick
+        .append('svg:image')
         .attr('x', -9)
         .attr('y', 3)
         .attr('dy', '.35em')
@@ -151,51 +196,6 @@ class BarChart extends Component {
             .style('opacity', 0);
         });
     });
-
-    this.svg
-      .append('g')
-      .attr('class', 'axis axis--y')
-      .call(this.yAxis)
-      .append('text')
-      .attr('class', 'yAxisLabel')
-      .attr('text-anchor', 'middle')
-      .attr('fill', '#000000')
-      .attr(
-        'transform',
-        `translate(${-(this.margin.left - 10)},${this.height / 2})rotate(-90)`
-      )
-      .text(this.props.viewBy.name);
-
-    this.svg
-      .selectAll('.bar')
-      .data(data)
-      .enter()
-      .append('rect')
-      .attr('class', 'bar')
-      .attr('x', d => this.x(d.vehicleType))
-      .attr('y', d => this.y(d[this.props.viewBy.vehicleDataRef]))
-      .attr(
-        'fill',
-        d => typesInfo.find(icon => icon.type === d.vehicleType).color
-      )
-      .attr('width', this.x.bandwidth())
-      .attr(
-        'height',
-        d => this.height - this.y(d[this.props.viewBy.vehicleDataRef])
-      );
-
-    this.svg
-      .selectAll('.label')
-      .data(data)
-      .enter()
-      .append('text')
-      .attr('class', 'label')
-      .attr('x', d => this.x(d.vehicleType) + this.x.bandwidth() / 2)
-      .attr('y', d => this.y(d[this.props.viewBy.vehicleDataRef]) - 3)
-      .attr('text-anchor', 'middle')
-      .text(d => {
-        return d3.format(',')(d[this.props.viewBy.vehicleDataRef]);
-      });
   };
 
   render() {

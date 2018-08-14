@@ -1,3 +1,4 @@
+/* Bar Chart */
 .axis--x path {
   display: none;
 }
@@ -16,54 +17,53 @@
   font-weight: 600;
 }
 
-div.tooltip {
+.iconTooltip {
   position: absolute;
-  text-align: center;
-  width: 100px;
-  height: 100px;
-  font-size: 12px;
-  pointer-events: none;
+  z-index: 1070;
+  display: block;
+  margin: 0;
+  font-weight: 400;
+  line-height: 1;
+  text-align: left;
+  text-align: start;
+  line-break: auto;
+  font-size: 0.875rem;
+  word-wrap: break-word;
 }
 
-/* Styling for the lines connecting the labels to the slices */
-polyline {
-  opacity: 0.3;
-  stroke: black;
-  stroke-width: 2px;
-  fill: none;
-}
-
-/* Make the percentage on the text labels bold*/
-.labelName tspan {
-  font-style: normal;
-  font-weight: 700;
-}
-
-/* In biology we generally italicise species names. */
-.labelName {
-  font-size: 0.9em;
-  font-style: italic;
+/* Donut Chart */
+.donutBox {
+  max-height: 100%;
 }
 
 .donutLegend {
   max-height: 100%;
 }
 
-.donutBox {
-  max-height: 100%;
+.donutLegend .key {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+  margin-bottom: 5px;
 }
 
-.legendTitle {
+.donutLegend .symbol {
+  height: 15px;
+  width: 15px;
+  margin: 5px;
+}
+
+.donutLegend .title {
   font-size: 14px;
   font-weight: 700;
   color: #000000;
   margin-bottom: 10px;
 }
 
-.legendTextBig {
+.donutLegend .textBig {
   font-size: 13px;
 }
 
-.legendTextSmall {
+.donutLegend .textSmall {
   font-size: 11px;
 }

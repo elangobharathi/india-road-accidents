@@ -121,15 +121,15 @@ class App extends Component {
           />
         </Col>
         <Col md="5 rightPane">
-          <div className="infoContainer flex-fill d-flex flex-column justify-content-between">
-            <div className="textsDiv">
+          <div className="d-flex flex-column justify-content-between h-100">
+            <div className="textContainer">
               <InfoTexts
                 selectedState={this.state.selectedState}
                 accidentsData={this.accidentsGeoData}
                 killedData={this.killedGeoData}
               />
             </div>
-            <div id="barChart" className="barChart mt-2">
+            <div id="barChart" className="barContainer">
               <BarChart
                 width={this.state.barChart.width}
                 height={this.state.barChart.height}
@@ -140,7 +140,7 @@ class App extends Component {
                 )}
               />
             </div>
-            <div id="donutChart" className="donutChart mt-3">
+            <div id="donutChart" className="donutContainer mt-3">
               <DonutChart
                 width={this.state.donutChart.width}
                 height={this.state.donutChart.height}
