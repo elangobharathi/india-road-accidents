@@ -16,7 +16,7 @@ L.Icon.Default.mergeOptions({
 
 class Map extends Component {
   config = {
-    url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
     attribution:
       '&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors &copy; <a href=&quot;https://carto.com/attribution/&quot;>CARTO</a>',
     center: [21.40400157264266, 82.21343994140626], // [lat, lng]

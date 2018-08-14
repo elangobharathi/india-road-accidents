@@ -117,6 +117,10 @@ class BarChart extends Component {
 
     const tooltipDiv = this.tooltipDiv;
 
+    const imagePath =
+      process.env.NODE_ENV === 'production'
+        ? '/india-road-accidents/images/'
+        : '/images/';
     xAxis.selectAll('.tick').each(function(d) {
       const p = d3.select(this);
       p.select('text').remove();
@@ -128,7 +132,7 @@ class BarChart extends Component {
         .attr('height', 32)
         .attr(
           'xlink:href',
-          `/images/${typesInfo.find(icon => icon.type === d).icon}.png`
+          `${imagePath}${typesInfo.find(icon => icon.type === d).icon}.png`
         )
         .on('mouseover', d => {
           tooltipDiv
