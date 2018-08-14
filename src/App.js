@@ -6,10 +6,12 @@ import Map from './map/Map';
 import RadioButton from './common/RadioButton';
 import InfoTexts from './InfoTexts';
 import BarChart from './chart/BarChart';
+import DonutChart from './chart/DonutChart';
 const shapeFile = require('./data/states.json');
 const accidentsTotalData = require('./data/accidents_total_share_plp.json');
 const killedTotalData = require('./data/killed_total_share_plp.json');
 const vehicleTypesData = require('./data/vehicle_types.json');
+const causesData = require('./data/causes.json');
 
 class App extends Component {
   defaultState = 'Tamil Nadu';
@@ -17,8 +19,12 @@ class App extends Component {
     viewBy: 'numberOfAccidents',
     selectedState: this.defaultState,
     barChart: {
-      width: 400,
-      height: 400
+      width: 300,
+      height: 300
+    },
+    donutChart: {
+      width: 200,
+      height: 200
     }
   };
 
@@ -49,6 +55,10 @@ class App extends Component {
       barChart: {
         width: document.getElementById('barChart').clientWidth,
         height: document.getElementById('barChart').clientHeight
+      },
+      donutChart: {
+        width: document.getElementById('donutChart').clientWidth,
+        height: document.getElementById('donutChart').clientHeight
       }
     });
   };
@@ -98,7 +108,7 @@ class App extends Component {
         </div>
       </div>,
       <div key="body" className="row h-100 mt-1">
-        <Col xs="7" className="mapContainer">
+        <Col md="7" className="mapContainer">
           <Map
             data={
               this.state.viewBy === 'numberOfAccidents'
@@ -110,22 +120,37 @@ class App extends Component {
             defaultState={this.defaultState}
           />
         </Col>
-        <Col xs="5 infoContainer">
-          <InfoTexts
-            selectedState={this.state.selectedState}
-            accidentsData={this.accidentsGeoData}
-            killedData={this.killedGeoData}
-          />
-          <div id="barChart">
-            <BarChart
-              width={this.state.barChart.width}
-              height={this.state.barChart.height}
-              data={vehicleTypesData}
-              selectedState={this.state.selectedState}
-              viewBy={this.viewByButtons.find(
-                each => each.id === this.state.viewBy
-              )}
-            />
+        <Col md="5 rightPane">
+          <div className="infoContainer flex-fill d-flex flex-column justify-content-between">
+            <div className="textsDiv">
+              <InfoTexts
+                selectedState={this.state.selectedState}
+                accidentsData={this.accidentsGeoData}
+                killedData={this.killedGeoData}
+              />
+            </div>
+            <div id="barChart" className="barChart mt-2">
+              <BarChart
+                width={this.state.barChart.width}
+                height={this.state.barChart.height}
+                data={vehicleTypesData}
+                selectedState={this.state.selectedState}
+                viewBy={this.viewByButtons.find(
+                  each => each.id === this.state.viewBy
+                )}
+              />
+            </div>
+            <div id="donutChart" className="donutChart mt-3">
+              <DonutChart
+                width={this.state.donutChart.width}
+                height={this.state.donutChart.height}
+                data={causesData}
+                selectedState={this.state.selectedState}
+                viewBy={this.viewByButtons.find(
+                  each => each.id === this.state.viewBy
+                )}
+              />
+            </div>
           </div>
         </Col>
       </div>

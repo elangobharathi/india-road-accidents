@@ -7,32 +7,38 @@ const typesInfo = [
   {
     type: 'Two Wheelers',
     color: '#CC998C',
-    icon: 'bike'
+    icon: 'bike',
+    included: ['Motor Cycle', 'Moped/Scootty']
   },
   {
     type: 'Auto Rickshaws',
     color: '#F29279',
-    icon: 'auto'
+    icon: 'auto',
+    included: ['Auto Rickshaws']
   },
   {
     type: 'Cars',
     color: '#AA8899',
-    icon: 'car'
+    icon: 'car',
+    included: ['Cars', 'Jeep', 'Taxis']
   },
   {
     type: 'Buses',
     color: '#FF99B6',
-    icon: 'bus'
+    icon: 'bus',
+    included: ['Bus']
   },
   {
     type: 'Trucks',
     color: '#fdc171',
-    icon: 'truck'
+    icon: 'truck',
+    included: ['Truck Lorry', 'Tempo', 'Trolly', 'Tractor']
   },
   {
     type: 'Others',
     color: '#AA9988',
-    icon: 'other'
+    icon: 'other',
+    included: ['E-Rickshaw', 'Other Motor Vehicles', 'Other Objects']
   }
 ];
 
@@ -64,13 +70,12 @@ class BarChart extends Component {
 
   resetChart = props => {
     this.svg.remove();
+    this.tooltipDiv.remove();
     this.initializeParameters(props);
     this.initializeContainer();
   };
 
   svgRef = React.createRef();
-  //   formatTicksTok = d3.formatPrefix('.0', 10e2);
-
   initializeParameters = props => {
     this.margin = { top: 40, right: 20, bottom: 40, left: 60 };
     this.width = props.width - this.margin.left - this.margin.right;
@@ -82,7 +87,6 @@ class BarChart extends Component {
     this.y = d3.scaleLinear().rangeRound([this.height, 0]);
     this.xAxis = d3.axisBottom(this.x).tickPadding(10);
     this.yAxis = d3.axisLeft(this.y).ticks(5);
-    //   .tickFormat(this.formatTicksTok);
   };
 
   initializeContainer = () => {
@@ -90,10 +94,15 @@ class BarChart extends Component {
       .select(this.svgRef.current)
       .append('g')
       .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
+
+    this.tooltipDiv = d3
+      .select('body')
+      .append('div')
+      .attr('class', 'tooltip')
+      .style('opacity', 0);
   };
 
   renderChart = () => {
-    console.log(this.props.viewBy);
     const data = this.props.data.filter(
       d => d.name === this.props.selectedState
     );
@@ -105,6 +114,8 @@ class BarChart extends Component {
       .attr('class', 'axis axis--x')
       .attr('transform', `translate(0, ${this.height})`)
       .call(this.xAxis);
+
+    const tooltipDiv = this.tooltipDiv;
 
     xAxis.selectAll('.tick').each(function(d) {
       const p = d3.select(this);
@@ -118,7 +129,23 @@ class BarChart extends Component {
         .attr(
           'xlink:href',
           `/images/${typesInfo.find(icon => icon.type === d).icon}.png`
-        );
+        )
+        .on('mouseover', d => {
+          tooltipDiv
+            .transition()
+            .duration(200)
+            .style('opacity', 0.9);
+          tooltipDiv
+            .html(typesInfo.find(icon => icon.type === d).included.join(', '))
+            .style('left', d3.event.pageX - 32 + 'px')
+            .style('top', d3.event.pageY + 15 + 'px');
+        })
+        .on('mouseout', d => {
+          tooltipDiv
+            .transition()
+            .duration(500)
+            .style('opacity', 0);
+        });
     });
 
     this.svg
@@ -128,7 +155,7 @@ class BarChart extends Component {
       .append('text')
       .attr('class', 'yAxisLabel')
       .attr('text-anchor', 'middle')
-      .attr('fill', '#de6980')
+      .attr('fill', '#000000')
       .attr(
         'transform',
         `translate(${-(this.margin.left - 10)},${this.height / 2})rotate(-90)`

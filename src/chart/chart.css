@@ -12,7 +12,58 @@
 }
 
 .yAxisLabel {
-  font: inherit;
   font-size: 13px;
   font-weight: 600;
+}
+
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: 100px;
+  height: 100px;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+/* Styling for the lines connecting the labels to the slices */
+polyline {
+  opacity: 0.3;
+  stroke: black;
+  stroke-width: 2px;
+  fill: none;
+}
+
+/* Make the percentage on the text labels bold*/
+.labelName tspan {
+  font-style: normal;
+  font-weight: 700;
+}
+
+/* In biology we generally italicise species names. */
+.labelName {
+  font-size: 0.9em;
+  font-style: italic;
+}
+
+.donutLegend {
+  max-height: 100%;
+}
+
+.donutBox {
+  max-height: 100%;
+}
+
+.legendTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 10px;
+}
+
+.legendTextBig {
+  font-size: 13px;
+}
+
+.legendTextSmall {
+  font-size: 11px;
 }

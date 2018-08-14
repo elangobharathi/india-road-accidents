@@ -18,9 +18,13 @@
   margin: 0 auto;
 }
 
-.infoContainer {
+.rightPane {
   height: 90%;
   background-color: #f8f9fa;
+}
+
+.infoContainer {
+  height: 100%;
 }
 
 .texts p {
@@ -30,4 +34,20 @@
 .texts .stateName {
   font-size: 17px;
   font-weight: 700;
+}
+
+.flex-fill {
+  flex: 1 1 auto;
+}
+
+.textsDiv {
+  height: 15%;
+}
+
+.barChart {
+  height: 45%;
+}
+
+.donutChart {
+  height: 40%;
 }
