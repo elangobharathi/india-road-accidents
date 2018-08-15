@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { arrayOf, func, shape, string } from 'prop-types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -14,8 +14,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
-class Map extends Component {
-  config = {
+const Map = props => {
+  const config = {
     url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
     attribution:
       '&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors &copy; <a href=&quot;https://carto.com/attribution/&quot;>CARTO</a>',
@@ -23,7 +23,7 @@ class Map extends Component {
     zoomLevel: 5
   };
 
-  choroplethConfig = {
+  const choroplethConfig = {
     style: {
       weight: 0.5,
       opacity: 1,
@@ -58,38 +58,28 @@ class Map extends Component {
       }
     ]
   };
+  const choroplethLayer = (
+    <Choropleth
+      viewBy={props.viewBy}
+      choroplethConfig={choroplethConfig}
+      shapeDisplayProp="name"
+      data={{
+        type: 'FeatureCollection',
+        features: props.data
+      }}
+      valueProperty={feature => feature.properties['perLakhPopulation']}
+      onEachFeatureSelect={props.onEachFeature}
+      defaultState={props.defaultState}
+    />
+  );
 
-  //   handleMoveend = e => {
-  //     console.log(e.target.getCenter());
-  //   };
-
-  render() {
-    const choroplethLayer = (
-      <Choropleth
-        viewBy={this.props.viewBy}
-        choroplethConfig={this.choroplethConfig}
-        shapeDisplayProp="name"
-        data={{
-          type: 'FeatureCollection',
-          features: this.props.data
-        }}
-        valueProperty={feature => feature.properties['perLakhPopulation']}
-        onEachFeatureSelect={this.props.onEachFeature}
-        defaultState={this.props.defaultState}
-      />
-    );
-
-    return (
-      <LeafletMap center={this.config.center} zoom={this.config.zoomLevel}>
-        <TileLayer
-          url={this.config.url}
-          attribution={this.config.attribution}
-        />
-        {choroplethLayer}
-      </LeafletMap>
-    );
-  }
-}
+  return (
+    <LeafletMap center={config.center} zoom={config.zoomLevel}>
+      <TileLayer url={config.url} attribution={config.attribution} />
+      {choroplethLayer}
+    </LeafletMap>
+  );
+};
 
 Map.propTypes = {
   data: arrayOf(shape).isRequired,

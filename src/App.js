@@ -4,14 +4,17 @@ import { Col } from 'reactstrap';
 import './App.css';
 import Map from './map/Map';
 import RadioButton from './common/RadioButton';
-import InfoTexts from './InfoTexts';
+import InfoTexts from './info/InfoTexts';
 import BarChart from './chart/BarChart';
 import DonutChart from './chart/DonutChart';
-const shapeFile = require('./data/states.json');
-const accidentsTotalData = require('./data/accidents_total_share_plp.json');
-const killedTotalData = require('./data/killed_total_share_plp.json');
-const vehicleTypesData = require('./data/vehicle_types.json');
-const causesData = require('./data/causes.json');
+
+const data = {
+  shapeFile: require('./data/states.json'),
+  accidentsTotal: require('./data/accidents_total_share_plp.json'),
+  killed: require('./data/killed_total_share_plp.json'),
+  vehicleTypes: require('./data/vehicle_types.json'),
+  causes: require('./data/causes.json')
+};
 
 class App extends Component {
   defaultState = 'Tamil Nadu';
@@ -70,22 +73,20 @@ class App extends Component {
   handleEachFeatureHighlight = feature => {
     this.setState({ selectedState: feature.name });
   };
-  accidentsGeoData = {};
-  killedGeoData = {};
 
   render() {
-    this.accidentsGeoData = shapeFile.features.map(shape => {
+    const accidentsGeoData = data.shapeFile.features.map(shape => {
       const obj = Object.assign({}, shape);
-      const accData = accidentsTotalData.find(
+      const accData = data.accidentsTotal.find(
         state => state.name === obj.properties.name
       );
       obj.properties = { ...accData };
       return obj;
     });
 
-    this.killedGeoData = shapeFile.features.map(shape => {
+    const killedGeoData = data.shapeFile.features.map(shape => {
       const obj = Object.assign({}, shape);
-      const killedData = killedTotalData.find(
+      const killedData = data.killed.find(
         state => state.name === obj.properties.name
       );
       obj.properties = { ...killedData };
@@ -112,8 +113,8 @@ class App extends Component {
           <Map
             data={
               this.state.viewBy === 'numberOfAccidents'
-                ? this.accidentsGeoData
-                : this.killedGeoData
+                ? accidentsGeoData
+                : killedGeoData
             }
             viewBy={this.state.viewBy}
             onEachFeature={this.handleEachFeatureHighlight}
@@ -125,15 +126,15 @@ class App extends Component {
             <div className="textContainer">
               <InfoTexts
                 selectedState={this.state.selectedState}
-                accidentsData={this.accidentsGeoData}
-                killedData={this.killedGeoData}
+                accidentsData={accidentsGeoData}
+                killedData={killedGeoData}
               />
             </div>
             <div id="barChart" className="barContainer">
               <BarChart
                 width={this.state.barChart.width}
                 height={this.state.barChart.height}
-                data={vehicleTypesData}
+                data={data.vehicleTypes}
                 selectedState={this.state.selectedState}
                 viewBy={this.viewByButtons.find(
                   each => each.id === this.state.viewBy
@@ -144,7 +145,7 @@ class App extends Component {
               <DonutChart
                 width={this.state.donutChart.width}
                 height={this.state.donutChart.height}
-                data={causesData}
+                data={data.causes}
                 selectedState={this.state.selectedState}
                 viewBy={this.viewByButtons.find(
                   each => each.id === this.state.viewBy

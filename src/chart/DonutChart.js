@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { arrayOf, shape, number, string } from 'prop-types';
 import * as d3 from 'd3';
-import './chart.css';
+import './Chart.css';
 
 class DonutChart extends Component {
   componentDidMount() {
@@ -130,7 +130,6 @@ class DonutChart extends Component {
   };
 
   render() {
-    console.log(this.props.width, this.props.height);
     return (
       <div className="donutBox d-flex justify-content-between">
         <div>

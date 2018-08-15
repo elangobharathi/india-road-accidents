@@ -3,7 +3,6 @@ import { arrayOf, shape, string, func } from 'prop-types';
 import L from 'leaflet';
 import LeafletChoropleth from 'react-leaflet-choropleth';
 import Control from './Control';
-// import { checkDecimal } from '../utils';
 
 class Choropleth extends Component {
   isDefaultFeature = true;
@@ -81,21 +80,6 @@ class Choropleth extends Component {
     this.dehighlightFeature(e.target);
   };
 
-  //   constructTooltip = (feature, defaultDisplayProp, displayPropsList) => {
-  //     let toolTipString = `<strong>${
-  //       feature.properties[defaultDisplayProp]
-  //     }</strong>`;
-  //     displayPropsList.forEach(displayItem => {
-  //       const value = feature.properties[displayItem.id];
-  //       const str = `${displayItem.name}: ${
-  //         checkDecimal(value) ? value.toFixed(2) : value
-  //       }`;
-  //       toolTipString = `${toolTipString} <br> ${str}`;
-  //     });
-
-  //     return toolTipString;
-  //   };
-
   render() {
     return [
       <LeafletChoropleth
@@ -108,13 +92,6 @@ class Choropleth extends Component {
         mode={this.props.choroplethConfig.mode}
         style={this.props.choroplethConfig.style}
         onEachFeature={(feature, layer) => {
-          //   layer.bindTooltip(
-          //     this.constructTooltip(
-          //       feature,
-          //       this.props.shapeDisplayProp,
-          //       this.props.choroplethConfig.displayPropsList
-          //     )
-          //   );
           layer.on({
             mouseover: this.handleMouseOver,
             mouseout: this.handleMouseOut

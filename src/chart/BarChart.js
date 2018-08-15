@@ -1,40 +1,7 @@
 import React, { Component } from 'react';
 import { arrayOf, shape, string, number } from 'prop-types';
 import * as d3 from 'd3';
-import './chart.css';
-
-const typesInfo = [
-  {
-    type: 'Two Wheelers',
-    icon: 'bike',
-    included: ['Motor Cycle', 'Moped/Scootty']
-  },
-  {
-    type: 'Auto Rickshaws',
-    icon: 'auto',
-    included: ['Auto Rickshaws']
-  },
-  {
-    type: 'Cars',
-    icon: 'car',
-    included: ['Cars', 'Jeep', 'Taxis']
-  },
-  {
-    type: 'Buses',
-    icon: 'bus',
-    included: ['Bus']
-  },
-  {
-    type: 'Trucks',
-    icon: 'truck',
-    included: ['Truck Lorry', 'Tempo', 'Trolly', 'Tractor']
-  },
-  {
-    type: 'Others',
-    icon: 'other',
-    included: ['Other Motor Vehicles']
-  }
-];
+import './Chart.css';
 
 class BarChart extends Component {
   componentDidMount() {
@@ -62,6 +29,41 @@ class BarChart extends Component {
     this.renderChart();
   }
 
+  typesInfo = [
+    {
+      type: 'Two Wheelers',
+      icon: 'bike',
+      included: ['Motor Cycle', 'Moped/Scootty']
+    },
+    {
+      type: 'Auto Rickshaws',
+      icon: 'auto',
+      included: ['Auto Rickshaws']
+    },
+    {
+      type: 'Cars',
+      icon: 'car',
+      included: ['Cars', 'Jeep', 'Taxis']
+    },
+    {
+      type: 'Buses',
+      icon: 'bus',
+      included: ['Bus']
+    },
+    {
+      type: 'Trucks',
+      icon: 'truck',
+      included: ['Truck Lorry', 'Tempo', 'Trolly', 'Tractor']
+    },
+    {
+      type: 'Others',
+      icon: 'other',
+      included: ['Other Motor Vehicles']
+    }
+  ];
+
+  svgRef = React.createRef();
+
   resetChart = props => {
     this.svg.remove();
     this.tooltipDiv.remove();
@@ -69,7 +71,6 @@ class BarChart extends Component {
     this.initializeContainer();
   };
 
-  svgRef = React.createRef();
   initializeParameters = props => {
     this.margin = { top: 40, right: 20, bottom: 40, left: 60 };
     this.width = props.width - this.margin.left - this.margin.right;
@@ -164,6 +165,7 @@ class BarChart extends Component {
         ? '/india-road-accidents/images/'
         : '/images/';
 
+    const typesInfo = this.typesInfo;
     xAxis.selectAll('.tick').each(function(d) {
       const tick = d3.select(this);
       tick.select('text').remove();
