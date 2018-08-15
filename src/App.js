@@ -123,14 +123,14 @@ class App extends Component {
         </Col>
         <Col md="5 rightPane">
           <div className="d-flex flex-column justify-content-between h-100">
-            <div className="textContainer">
+            <div className="textContainer d-flex ">
               <InfoTexts
                 selectedState={this.state.selectedState}
                 accidentsData={accidentsGeoData}
                 killedData={killedGeoData}
               />
             </div>
-            <div id="barChart" className="barContainer">
+            <div id="barChart" className="barContainer mt-3">
               <BarChart
                 width={this.state.barChart.width}
                 height={this.state.barChart.height}

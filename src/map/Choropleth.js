@@ -25,6 +25,8 @@ class Choropleth extends Component {
     this.highlightDefaultFeature();
   }
 
+  previousSelection = null;
+
   highlightFeature = layer => {
     layer.setStyle({
       weight: 5,
@@ -80,6 +82,19 @@ class Choropleth extends Component {
     this.dehighlightFeature(e.target);
   };
 
+  handleClick = e => {
+    if (this.isDefaultFeature) {
+      this.dehighlightDefaultFeature();
+    }
+    if (this.previousSelection) {
+      this.dehighlightFeature(this.previousSelection);
+    }
+
+    this.highlightFeature(e.target);
+    this.props.onEachFeatureSelect(e.target.feature.properties);
+    this.previousSelection = e.target;
+  };
+
   render() {
     return [
       <LeafletChoropleth
@@ -94,7 +109,8 @@ class Choropleth extends Component {
         onEachFeature={(feature, layer) => {
           layer.on({
             mouseover: this.handleMouseOver,
-            mouseout: this.handleMouseOut
+            mouseout: this.handleMouseOut,
+            click: this.handleClick
           });
         }}
       />,
