@@ -8,6 +8,14 @@ Road accidents in India is amongst the highest in the world. In 2016 alone, ther
 
 React.js, Leaflet, d3.js
 
+#### HOW TO RUN
+
+Please clone this repo and run the following commands.
+
+`yarn`
+
+`yarn start`
+
 #### DATA
 
 http://data.gov.in.
