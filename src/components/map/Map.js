@@ -14,62 +14,63 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
-const Map = props => {
-  const config = {
-    url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-    attribution:
-      '&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors &copy; <a href=&quot;https://carto.com/attribution/&quot;>CARTO</a>',
-    center: [21.40400157264266, 82.21343994140626], // [lat, lng]
-    zoomLevel: 5
-  };
+const config = {
+  url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+  attribution:
+    '&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors &copy; <a href=&quot;https://carto.com/attribution/&quot;>CARTO</a>',
+  center: [21.40400157264266, 82.21343994140626], // [lat, lng]
+  zoomLevel: 5
+};
 
-  const choroplethConfig = {
-    style: {
-      weight: 0.5,
-      opacity: 1,
-      color: 'white',
-      dashArray: '3',
-      fillOpacity: 0.8
+const choroplethConfig = {
+  style: {
+    weight: 0.5,
+    opacity: 1,
+    color: 'white',
+    dashArray: '3',
+    fillOpacity: 0.8
+  },
+  legendColor: [
+    '#FFEDA0',
+    '#FED976',
+    '#FEB24C',
+    '#FD8D3C',
+    '#FC4E2A',
+    '#E31A1C',
+    '#BD0026',
+    '#800026'
+  ],
+  steps: 8,
+  mode: 'q',
+  displayPropsList: [
+    {
+      id: 'total',
+      name: 'Total'
     },
-    legendColor: [
-      '#FFEDA0',
-      '#FED976',
-      '#FEB24C',
-      '#FD8D3C',
-      '#FC4E2A',
-      '#E31A1C',
-      '#BD0026',
-      '#800026'
-    ],
-    steps: 8,
-    mode: 'q',
-    displayPropsList: [
-      {
-        id: 'total',
-        name: 'Total'
-      },
-      {
-        id: 'share',
-        name: 'Share'
-      },
-      {
-        id: 'perLakhPopulation',
-        name: 'Per Lakh Population'
-      }
-    ]
-  };
+    {
+      id: 'share',
+      name: 'Share'
+    },
+    {
+      id: 'perLakhPopulation',
+      name: 'Per Lakh Population'
+    }
+  ]
+};
+
+const Map = ({ viewBy, data, onEachFeature, defaultProvince }) => {
   const choroplethLayer = (
     <Choropleth
-      viewBy={props.viewBy}
+      viewBy={viewBy}
       choroplethConfig={choroplethConfig}
       shapeDisplayProp="name"
       data={{
         type: 'FeatureCollection',
-        features: props.data
+        features: data
       }}
       valueProperty={feature => feature.properties['perLakhPopulation']}
-      onEachFeatureSelect={props.onEachFeature}
-      defaultState={props.defaultState}
+      onEachFeatureSelect={onEachFeature}
+      defaultProvince={defaultProvince}
     />
   );
 
@@ -85,7 +86,7 @@ Map.propTypes = {
   data: arrayOf(shape).isRequired,
   viewBy: string.isRequired,
   onEachFeature: func.isRequired,
-  defaultState: string.isRequired
+  defaultProvince: string.isRequired
 };
 
 export default Map;

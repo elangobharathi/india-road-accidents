@@ -4,6 +4,20 @@ import L from 'leaflet';
 import LeafletChoropleth from 'react-leaflet-choropleth';
 import Control from './Control';
 
+const highlight = {
+  weight: 5,
+  color: '#666',
+  dashArray: '',
+  fillOpacity: 0.8
+};
+const dehighlight = {
+  weight: 0.5,
+  opacity: 1,
+  color: 'white',
+  dashArray: '3',
+  fillOpacity: 0.8
+};
+
 class Choropleth extends Component {
   isDefaultFeature = true;
   chroplethRef = React.createRef();
@@ -22,18 +36,13 @@ class Choropleth extends Component {
   }
 
   componentDidMount() {
-    this.highlightDefaultFeature();
+    this.highlightDefaultFeature(highlight);
   }
 
   previousSelection = null;
 
   highlightFeature = layer => {
-    layer.setStyle({
-      weight: 5,
-      color: '#666',
-      dashArray: '',
-      fillOpacity: 0.8
-    });
+    layer.setStyle(highlight);
 
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
       layer.bringToFront();
@@ -41,13 +50,7 @@ class Choropleth extends Component {
   };
 
   dehighlightFeature = layer => {
-    layer.setStyle({
-      weight: 0.5,
-      opacity: 1,
-      color: 'white',
-      dashArray: '3',
-      fillOpacity: 0.8
-    });
+    layer.setStyle(dehighlight);
   };
 
   getLayer = stateName => {
@@ -60,12 +63,12 @@ class Choropleth extends Component {
   };
 
   highlightDefaultFeature = () => {
-    const layer = this.getLayer(this.props.defaultState);
+    const layer = this.getLayer(this.props.defaultProvince);
     this.highlightFeature(layer);
   };
 
   dehighlightDefaultFeature = () => {
-    const layer = this.getLayer(this.props.defaultState);
+    const layer = this.getLayer(this.props.defaultProvince);
     this.dehighlightFeature(layer);
     this.isDefaultFeature = false;
   };
@@ -96,16 +99,17 @@ class Choropleth extends Component {
   };
 
   render() {
+    const { viewBy, data, valueProperty, choroplethConfig } = this.props;
     return [
       <LeafletChoropleth
-        key={this.props.viewBy}
+        key={viewBy}
         ref={this.chroplethRef}
-        data={this.props.data}
-        valueProperty={this.props.valueProperty}
-        colors={this.props.choroplethConfig.legendColor}
-        steps={this.props.choroplethConfig.steps}
-        mode={this.props.choroplethConfig.mode}
-        style={this.props.choroplethConfig.style}
+        data={data}
+        valueProperty={valueProperty}
+        colors={choroplethConfig.legendColor}
+        steps={choroplethConfig.steps}
+        mode={choroplethConfig.mode}
+        style={choroplethConfig.style}
         onEachFeature={(feature, layer) => {
           layer.on({
             mouseover: this.handleMouseOver,
@@ -152,7 +156,7 @@ Choropleth.propTypes = {
   valueProperty: func.isRequired,
   choroplethConfig: shape({}).isRequired,
   onEachFeatureSelect: func.isRequired,
-  defaultState: string.isRequired
+  defaultProvince: string.isRequired
 };
 
 export default Choropleth;

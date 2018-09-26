@@ -2,16 +2,16 @@ import React from 'react';
 import { arrayOf, shape, string } from 'prop-types';
 import './InfoTexts.css';
 
-const InfoTexts = props => {
-  const accidentsInfo = props.accidentsData.find(
-    state => state.properties.name === props.selectedState
+const InfoTexts = ({ accidentsData, killedData, selectedState }) => {
+  const accidentsInfo = accidentsData.find(
+    state => state.properties.name === selectedState
   );
-  const killedInfo = props.killedData.find(
-    state => state.properties.name === props.selectedState
+  const killedInfo = killedData.find(
+    state => state.properties.name === selectedState
   );
   return (
     <div className="texts d-flex flex-column">
-      <p className="stateName">{props.selectedState}</p>
+      <p className="stateName">{selectedState}</p>
       <p className="mb-0">
         Number of Accidents Per Lakh Population :{' '}
         <strong>{accidentsInfo.properties.perLakhPopulation}</strong>

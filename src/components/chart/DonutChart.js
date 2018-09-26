@@ -3,6 +3,22 @@ import { arrayOf, shape, number, string } from 'prop-types';
 import * as d3 from 'd3';
 import './Chart.css';
 
+const percentFormat = d3.format(',.2%');
+const colorScale = d3.scaleOrdinal([
+  '#800026',
+  '#268000',
+  '#004d80',
+  '#FC4E2A',
+  '#806d00',
+  '#FEB24C',
+  '#800066',
+  '#CC6EAE'
+]);
+const margin = { top: 10, right: 0, bottom: 10, left: 0 };
+const padAngle = 0.015;
+const floatFormat = d3.format('.4r');
+const cornerRadius = 3;
+
 class DonutChart extends Component {
   componentDidMount() {
     this.initializeParameters(this.props);
@@ -29,7 +45,6 @@ class DonutChart extends Component {
   }
 
   donutChartRef = React.createRef();
-  percentFormat = d3.format(',.2%');
 
   resetChart = props => {
     this.svg.remove();
@@ -41,24 +56,9 @@ class DonutChart extends Component {
     const svgRef = d3.select(this.donutChartRef.current);
     const width = currentProps.width / 2;
     const height = currentProps.height;
-    const margin = { top: 10, right: 0, bottom: 10, left: 0 };
-    const padAngle = 0.015;
-    const floatFormat = d3.format('.4r');
-    const cornerRadius = 3;
 
     this.radius = Math.min(width, height) / 2;
-    this.colorScale = d3.scaleOrdinal([
-      '#800026',
-      '#268000',
-      '#004d80',
-      '#FC4E2A',
-      '#806d00',
-      '#FEB24C',
-      '#800066',
-      '#CC6EAE'
-    ]);
     this.value = currentProps.viewBy.vehicleDataRef;
-    this.category = 'cause';
     this.legend = d3.select('.donutLegend');
 
     this.pie = d3
@@ -95,7 +95,7 @@ class DonutChart extends Component {
       .data(this.pie)
       .enter()
       .append('path')
-      .attr('fill', d => this.colorScale(d.data[this.category]))
+      .attr('fill', d => colorScale(d.data[this.props.category]))
       .attr('d', this.arc);
 
     const keys = this.legend
@@ -109,7 +109,7 @@ class DonutChart extends Component {
       keys
         .append('div')
         .attr('class', 'symbol')
-        .style('background-color', d => this.colorScale(d[this.category]));
+        .style('background-color', d => colorScale(d[this.props.category]));
     }
 
     keys
@@ -120,10 +120,10 @@ class DonutChart extends Component {
           ? 'textBig'
           : 'textSmall'
       )
-      .style('color', d => this.colorScale(d[this.category]))
+      .style('color', d => colorScale(d[this.props.category]))
       .html(
         d =>
-          `${d[this.category]}: <strong>${this.percentFormat(
+          `${d[this.props.category]}: <strong>${percentFormat(
             d[this.value] / total
           )}</strong>`
       );
@@ -151,6 +151,7 @@ DonutChart.propTypes = {
   width: number.isRequired,
   height: number.isRequired,
   data: arrayOf(shape).isRequired,
+  category: string.isRequired,
   selectedState: string.isRequired,
   viewBy: shape({}).isRequired
 };

@@ -3,6 +3,50 @@ import { arrayOf, shape, string, number } from 'prop-types';
 import * as d3 from 'd3';
 import './Chart.css';
 
+const typesInfo = [
+  {
+    type: 'Two Wheelers',
+    icon: 'bike',
+    included: ['Motor Cycle', 'Moped/Scootty']
+  },
+  {
+    type: 'Auto Rickshaws',
+    icon: 'auto',
+    included: ['Auto Rickshaws']
+  },
+  {
+    type: 'Cars',
+    icon: 'car',
+    included: ['Cars', 'Jeep', 'Taxis']
+  },
+  {
+    type: 'Buses',
+    icon: 'bus',
+    included: ['Bus']
+  },
+  {
+    type: 'Trucks',
+    icon: 'truck',
+    included: ['Truck Lorry', 'Tempo', 'Trolly', 'Tractor']
+  },
+  {
+    type: 'Others',
+    icon: 'other',
+    included: ['Other Motor Vehicles']
+  }
+];
+
+const colorScale = d3.scaleOrdinal([
+  '#CC998C',
+  '#F29279',
+  '#AA8899',
+  '#FF99B6',
+  '#fdc171',
+  '#AA9988'
+]);
+
+const margin = { top: 40, right: 20, bottom: 40, left: 60 };
+
 class BarChart extends Component {
   componentDidMount() {
     this.initializeParameters(this.props);
@@ -29,39 +73,6 @@ class BarChart extends Component {
     this.renderChart();
   }
 
-  typesInfo = [
-    {
-      type: 'Two Wheelers',
-      icon: 'bike',
-      included: ['Motor Cycle', 'Moped/Scootty']
-    },
-    {
-      type: 'Auto Rickshaws',
-      icon: 'auto',
-      included: ['Auto Rickshaws']
-    },
-    {
-      type: 'Cars',
-      icon: 'car',
-      included: ['Cars', 'Jeep', 'Taxis']
-    },
-    {
-      type: 'Buses',
-      icon: 'bus',
-      included: ['Bus']
-    },
-    {
-      type: 'Trucks',
-      icon: 'truck',
-      included: ['Truck Lorry', 'Tempo', 'Trolly', 'Tractor']
-    },
-    {
-      type: 'Others',
-      icon: 'other',
-      included: ['Other Motor Vehicles']
-    }
-  ];
-
   svgRef = React.createRef();
 
   resetChart = props => {
@@ -72,9 +83,8 @@ class BarChart extends Component {
   };
 
   initializeParameters = props => {
-    this.margin = { top: 40, right: 20, bottom: 40, left: 60 };
-    this.width = props.width - this.margin.left - this.margin.right;
-    this.height = props.height - this.margin.top - this.margin.bottom;
+    this.width = props.width - margin.left - margin.right;
+    this.height = props.height - margin.top - margin.bottom;
     this.x = d3
       .scaleBand()
       .rangeRound([0, this.width])
@@ -83,22 +93,13 @@ class BarChart extends Component {
     this.xAxis = d3.axisBottom(this.x).tickPadding(10);
     this.yAxis = d3.axisLeft(this.y).ticks(5);
     this.value = props.viewBy.vehicleDataRef;
-    this.category = 'vehicleType';
-    this.colorScale = d3.scaleOrdinal([
-      '#CC998C',
-      '#F29279',
-      '#AA8899',
-      '#FF99B6',
-      '#fdc171',
-      '#AA9988'
-    ]);
   };
 
   initializeContainer = () => {
     this.svg = d3
       .select(this.svgRef.current)
       .append('g')
-      .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
+      .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
     this.tooltipDiv = d3
       .select('body')
@@ -111,7 +112,7 @@ class BarChart extends Component {
     const data = this.props.data.filter(
       d => d.name === this.props.selectedState
     );
-    this.x.domain(data.map(d => d[this.category]));
+    this.x.domain(data.map(d => d[this.props.category]));
     this.y.domain([0, d3.max(data, d => d[this.value])]);
 
     const xAxis = this.svg
@@ -130,7 +131,7 @@ class BarChart extends Component {
       .attr('fill', '#000000')
       .attr(
         'transform',
-        `translate(${-(this.margin.left - 10)},${this.height / 2})rotate(-90)`
+        `translate(${-(margin.left - 10)},${this.height / 2})rotate(-90)`
       )
       .text(this.props.viewBy.name);
 
@@ -140,9 +141,9 @@ class BarChart extends Component {
       .enter()
       .append('rect')
       .attr('class', 'bar')
-      .attr('x', d => this.x(d[this.category]))
+      .attr('x', d => this.x(d[this.props.category]))
       .attr('y', d => this.y(d[this.value]))
-      .attr('fill', d => this.colorScale(d[this.category]))
+      .attr('fill', d => colorScale(d[this.props.category]))
       .attr('width', this.x.bandwidth())
       .attr('height', d => this.height - this.y(d[this.value]));
 
@@ -152,7 +153,7 @@ class BarChart extends Component {
       .enter()
       .append('text')
       .attr('class', 'label')
-      .attr('x', d => this.x(d[this.category]) + this.x.bandwidth() / 2)
+      .attr('x', d => this.x(d[this.props.category]) + this.x.bandwidth() / 2)
       .attr('y', d => this.y(d[this.value]) - 3)
       .attr('text-anchor', 'middle')
       .text(d => {
@@ -165,7 +166,6 @@ class BarChart extends Component {
         ? '/india-road-accidents/images/'
         : '/images/';
 
-    const typesInfo = this.typesInfo;
     xAxis.selectAll('.tick').each(function(d) {
       const tick = d3.select(this);
       tick.select('text').remove();
@@ -188,8 +188,8 @@ class BarChart extends Component {
             .style('opacity', 0.9);
           tooltipDiv
             .html(typesInfo.find(icon => icon.type === d).included.join(', '))
-            .style('left', d3.event.pageX - 32 + 'px')
-            .style('top', d3.event.pageY + 15 + 'px');
+            .style('left', `${d3.event.pageX - 32}px`)
+            .style('top', `${d3.event.pageY + 15}px`);
         })
         .on('mouseout', d => {
           tooltipDiv
@@ -216,6 +216,7 @@ BarChart.propTypes = {
   height: number.isRequired,
   data: arrayOf(shape).isRequired,
   selectedState: string.isRequired,
+  category: string.isRequired,
   viewBy: shape({}).isRequired
 };
 
