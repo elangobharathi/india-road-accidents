@@ -4,6 +4,8 @@
 
 Road accidents in India is amongst the highest in the world. In 2016 alone, there were 1,50,785 people who lost their lives on Indian roads. This visualization is to create more awareness and understand the gravity of the situation better.
 
+Demo: https://elangobharathi.github.io/india-road-accidents/
+
 #### TOOLS USED
 
 React.js, Leaflet, d3.js
